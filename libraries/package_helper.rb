@@ -75,21 +75,25 @@ module MSDotNet
           name:     'Microsoft .NET Framework 4.5.2',
           url:      'https://download.microsoft.com/download/E/2/1/E21644B5-2DF2-47C2-91BD-63C560427900/NDP452-KB2901907-x86-x64-AllOS-ENU.exe',
           checksum: '6c2c589132e830a185c5f40f82042bee3022e721a216680bd9b3995ba86f3781',
+          not_if: %w(KB2901982 KB2934520),
         },
         '4.6' => {
           name:     'Microsoft .NET Framework 4.6',
           url:      'https://download.microsoft.com/download/C/3/A/C3A5200B-D33C-47E9-9D70-2F7C65DAAD94/NDP46-KB3045557-x86-x64-AllOS-ENU.exe',
           checksum: 'b21d33135e67e3486b154b11f7961d8e1cfd7a603267fb60febb4a6feab5cf87',
+          not_if: %w(KB3045562 KB3045563),
         },
         '4.6.1' => {
           name:     'Microsoft .NET Framework 4.6.1',
           url:      'https://download.microsoft.com/download/E/4/1/E4173890-A24A-4936-9FC9-AF930FE3FA40/NDP461-KB3102436-x86-x64-AllOS-ENU.exe',
           checksum: 'beaa901e07347d056efe04e8961d5546c7518fab9246892178505a7ba631c301',
+          not_if: %w(KB3102439 KB3102467 KB3102495),
         },
         '4.6.2' => {
           name:     'Microsoft .NET Framework 4.6.2',
           url:      'https://download.microsoft.com/download/F/9/4/F942F07D-F26F-4F30-B4E3-EBD54FABA377/NDP462-KB3151800-x86-x64-AllOS-ENU.exe',
           checksum: '28886593e3b32f018241a4c0b745e564526dbb3295cb2635944e3a393f4278d4',
+          not_if: %w(KB3151804 KB3151864 KB3151900),
         },
         ###########
         # Patches
@@ -119,6 +123,7 @@ module MSDotNet
                     end,
           options:  '/norestart /quiet',
           checksum: x64? ? 'c10787e669b484674584a990e069295e8b81b5366f98508010a3ae181b729482' : '3368c3a329f402fd982b15b399368627b96973f008a5456b5286bdfc10c1169b',
+          not_if: %w(KB2919442 KB3173424 KB3021910 KB3012199 KB2989647 KB2975061 KB2969339 KB2904440),
         },
         'KB3173424' => {
           name:     'Update for Microsoft Windows (KB3173424)',
@@ -129,6 +134,7 @@ module MSDotNet
                     end,
           options:  '/norestart /quiet',
           checksum: x64? ? '2c6c577e4e231ce6b020e5b9a2766154f474c6ecae82735ba5ec03875d64895b' : '91bf481343be03cc310c50167be8ea1af92113048c99b7b91f1b2b03628b0dcd',
+          not_if: %w(KB3173424),
         },
         'KB2919355' => {
           name:     'Update for Microsoft Windows (KB2919355)',
@@ -139,39 +145,9 @@ module MSDotNet
                     end,
           options:  '/norestart /quiet',
           checksum: x64? ? 'b0c9ada530f5ee90bb962afa9ed26218c582362315e13b1ba97e59767cb7825d' : 'f8beca5b463a36e1fef45ad0dca6a0de7606930380514ac1852df5ca6e3f6c1d',
+          not_if: %w(KB2919355),
         },
-      ).tap do |packages|
-        # Some packages are installed as QFE updates on 2012, 2012R2 & 10
-        case nt_version
-          # Windows 8 & Server 2012
-          when 6.2
-            {
-              '4.5.2' => 'KB2901982',
-              '4.6' => 'KB3045562',
-              '4.6.1' => 'KB3102439',
-              '4.6.2' => 'KB3151804',
-            }
-          # Windows 8.1 & Server 2012R2
-          when 6.3
-            {
-              '4.5.2' => 'KB2934520',
-              '4.6' => 'KB3045563',
-              '4.6.1' => 'KB3102467',
-              '4.6.2' => 'KB3151864',
-              'KB2919442' => 'KB2919442',
-              'KB3173424' => 'KB3173424',
-              'KB2919355' => 'KB2919355',
-            }
-          # Windows 10 & Server 2016
-          when 10
-            {
-              '4.6.1' => 'KB3102495',
-              '4.6.2' => 'KB3151900',
-            }
-          else
-            {}
-        end.each { |v, kb| packages[v][:not_if] = "C:\\Windows\\System32\\wbem\\wmic.exe QFE where HotFixID='#{kb}' | FindStr #{kb}" }
-      end
+      )
     end
 
     protected
